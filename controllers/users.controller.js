@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const { User } = require("../model/userSchema");
 const bcrypt = require("bcrypt")
 
@@ -153,6 +154,41 @@ const searchUser = async (req, res) => {
   }
 }
 
+const postLogin = async (req, res) => {
+  try {
+    const { username, password } = req.body
+
+    const user = await User.findOne({ username })
+    console.log(user)
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Username is invalid"
+      })
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password)
+    if(!passwordMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Username or password is invalid"
+      })
+    }
+
+    const token = jwt.sign({ username: user.username }, "secret")
+    return res.json({
+      message: "Token",
+      token: token,
+    })
+  }catch (error) {
+    console.error("Error:", error)
+    return res.status(500).json({
+      success: false,
+      message: "Server error: An error occured during the login proccess"
+    })
+  }
+}
+
 
 
 module.exports = {
@@ -162,4 +198,5 @@ module.exports = {
   deleteUser,
   updateUser,
   searchUser,
+  postLogin,
 };
