@@ -30,3 +30,9 @@ const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`)
 })
+
+const { edus } = require("./routes/eduRoute")
+app.use("/edus", edus)
+
+const PORT_EDU = process.env.PORT || 3000
+
