@@ -41,8 +41,24 @@ const postRegister = async (req, res) => {
     }
 }
 
-
+const getEdus = async (req, res) => {
+    try {
+        const edus = await Edu.find({}) 
+        res.json({
+            success: true,
+            message: "Barcha Educationlar ro'yxati olingan",
+            innerData: edus,
+        })
+    }catch (error) {
+        console.error("Error fetching Educations:", error)
+        res.status(500).json({
+            success: false,
+            message: "Server xatosi, Educationlar olishda xatolik yuz berdi",
+        })
+    }
+}
 
 module.exports = {
     postRegister,
+    getEdus,
 }
