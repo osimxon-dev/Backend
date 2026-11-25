@@ -1,4 +1,5 @@
-const { Edu } = require("../model/eduSchema")
+const { Edu } = require("../model/eduSchema");
+const { edus } = require("../routes/eduRoute");
 
 
 const postRegister = async (req, res) => {
@@ -57,6 +58,21 @@ const getEdus = async (req, res) => {
         })
     }
 }
+
+const getEduById = async (req, res) => {
+    try {
+       const eduId = req.params.id
+
+       const edu = await Edu.findById(eduId)
+        if(!edu) {
+            return res.status(400).json({ message: "Edu not found" })
+        }
+        res.json({ message: "Edu found", edu })
+    }catch (error) {
+        console.error(error)
+        res.status(500).json({ message: "Internal Server Error" })
+    }
+}
  
 const deleteEdu = async (req, res) => {
     try {
@@ -73,8 +89,10 @@ const deleteEdu = async (req, res) => {
     }
 }
 
+
 module.exports = {
     postRegister,
     getEdus,
-    deleteEdu
+    deleteEdu,
+    getEduById,
 }
