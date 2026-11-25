@@ -57,8 +57,24 @@ const getEdus = async (req, res) => {
         })
     }
 }
+ 
+const deleteEdu = async (req, res) => {
+    try {
+        const eduId = req.params.id
+
+        const deletedEdu = await Edu.findByIdAndDelete(eduId)
+        if(!deletedEdu) {
+            return res.status(404).json({ message: "Edu not found" })
+        }
+    res.json({ message: "Edu deleted Successfully", deleteEdu })
+    }catch (error) {
+        console.error(error) 
+        res.status(500).json({ message: "Internal Server Error" })
+    }
+}
 
 module.exports = {
     postRegister,
     getEdus,
+    deleteEdu
 }
