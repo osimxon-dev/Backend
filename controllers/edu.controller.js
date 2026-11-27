@@ -1,5 +1,5 @@
 const { Edu } = require("../model/eduSchema");
-const { edus } = require("../routes/eduRoute");
+const { User } = require("../model/userSchema");
 
 
 const postRegister = async (req, res) => {
@@ -89,10 +89,67 @@ const deleteEdu = async (req, res) => {
     }
 }
 
+const updateEdu = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { city, street, center_name, branch, rating } = req.body
+
+        const updatedEdu = await Edu.findByIdAndUpdate(
+            id, 
+            { city, street, center_name, branch, rating },
+            { new: true }
+        )
+
+        if (!updatedEdu) {
+            return res.status(404).json({
+                success: false,
+                message: "O'quv markaz topilmadi",
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "O'quv markaz muvaffaqiyatli yangilandi",
+            data: updatedEdu,
+        })
+    }catch (error) {
+        console.error("Xato", error)
+        return res.status(500).json({
+            success: false,
+            message: "Server xatosi: O'quv markaz yuklashda xatolik yuz berdi"
+        })
+    }
+}
+
+const searchEdu = async (req, res) => {
+    try {
+        const { query } = req.query
+        if(!query || typeof query !== "string") {
+            return res.status(400).json({ message: "Invalid search query" })
+        }
+        const result = await Edu.find({
+            $or: [
+                { city: { $regex: query, $options: "i" } },
+                { center_name: { $regex: query, $options: "i" } },
+                { street: { $regex: query, $options: "i" } },
+            ]
+        })
+
+        if(result.length === 0) {
+            return res.json({ message: "Bunday edu topilmadi" })
+        }
+        res.json(result)
+    }catch (error) {
+        console.error("Error fetching edus:", error)
+    }
+}
+
 
 module.exports = {
     postRegister,
     getEdus,
     deleteEdu,
     getEduById,
+    updateEdu,
+    searchEdu,
 }
